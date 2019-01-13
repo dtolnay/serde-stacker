@@ -4,6 +4,9 @@ version = "0.0.0"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 license = "MIT OR Apache-2.0"
 description = "Serde adapter that avoids stack overflow by dynamically growing the stack"
+repository = "https://github.com/dtolnay/serde-stacker"
+documentation = "https://docs.rs/serde_stacker"
+readme = "README.md"
 edition = "2018"
 
 [dependencies]
