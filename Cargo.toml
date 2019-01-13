@@ -5,3 +5,7 @@ authors = ["David Tolnay <dtolnay@gmail.com>"]
 license = "MIT OR Apache-2.0"
 description = "Serde adapter that avoids stack overflow by dynamically growing the stack"
 edition = "2018"
+
+[dependencies]
+ref-cast = "0.2"
+serde = "1.0"
