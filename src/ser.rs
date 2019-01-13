@@ -10,6 +10,12 @@ where
     T::serialize(value, Serializer::new(serializer))
 }
 
+/// Serializer adapter that avoids stack overflows by dynamically growing the
+/// stack.
+///
+/// At each level of nested serialization, the adapter will check whether it is
+/// within `red_zone` bytes of the end of the stack. If so, it will allocate a
+/// new stack of size `stack_size` on which to continue deserialization.
 pub struct Serializer<S> {
     pub ser: S,
     pub red_zone: usize,
@@ -17,6 +23,8 @@ pub struct Serializer<S> {
 }
 
 impl<S> Serializer<S> {
+    /// Build a serializer adapter with reasonable default `red_zone` (64 KB)
+    /// and `stack_size` (2 MB).
     pub fn new(serializer: S) -> Self {
         let default_param = Param::default();
         Serializer {

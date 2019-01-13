@@ -10,6 +10,12 @@ where
     T::deserialize(Deserializer::new(deserializer))
 }
 
+/// Deserializer adapter that avoids stack overflows by dynamically growing the
+/// stack.
+///
+/// At each level of nested deserialization, the adapter will check whether it
+/// is within `red_zone` bytes of the end of the stack. If so, it will allocate
+/// a new stack of size `stack_size` on which to continue deserialization.
 pub struct Deserializer<D> {
     pub de: D,
     pub red_zone: usize,
@@ -17,6 +23,8 @@ pub struct Deserializer<D> {
 }
 
 impl<D> Deserializer<D> {
+    /// Build a deserializer adapter with reasonable default `red_zone` (64 KB)
+    /// and `stack_size` (2 MB).
     pub fn new(deserializer: D) -> Self {
         let default_param = Param::default();
         Deserializer {
