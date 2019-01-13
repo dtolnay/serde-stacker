@@ -7,5 +7,4 @@ description = "Serde adapter that avoids stack overflow by dynamically growing t
 edition = "2018"
 
 [dependencies]
-ref-cast = "0.2"
 serde = "1.0"

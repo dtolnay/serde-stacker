@@ -1,4 +1,4 @@
-use ref_cast::RefCast;
+use crate::param::Param;
 use serde::ser;
 use std::fmt::Display;
 
@@ -11,12 +11,19 @@ where
 }
 
 pub struct Serializer<S> {
-    ser: S,
+    pub ser: S,
+    pub red_zone: usize,
+    pub stack_size: usize,
 }
 
 impl<S> Serializer<S> {
     pub fn new(serializer: S) -> Self {
-        Serializer { ser: serializer }
+        let default_param = Param::default();
+        Serializer {
+            ser: serializer,
+            red_zone: default_param.red_zone,
+            stack_size: default_param.stack_size,
+        }
     }
 }
 
@@ -107,7 +114,8 @@ where
     where
         T: ?Sized + ser::Serialize,
     {
-        self.ser.serialize_some(Serialize::new(value))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.ser.serialize_some(&Serialize::new(value, param))
     }
 
     fn serialize_unit(self) -> Result<Self::Ok, Self::Error> {
@@ -136,8 +144,9 @@ where
     where
         T: ?Sized + ser::Serialize,
     {
+        let param = Param::new(self.red_zone, self.stack_size);
         self.ser
-            .serialize_newtype_struct(name, Serialize::new(value))
+            .serialize_newtype_struct(name, &Serialize::new(value, param))
     }
 
     fn serialize_newtype_variant<T>(
@@ -150,16 +159,27 @@ where
     where
         T: ?Sized + ser::Serialize,
     {
-        self.ser
-            .serialize_newtype_variant(name, variant_index, variant, Serialize::new(value))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.ser.serialize_newtype_variant(
+            name,
+            variant_index,
+            variant,
+            &Serialize::new(value, param),
+        )
     }
 
     fn serialize_seq(self, len: Option<usize>) -> Result<Self::SerializeSeq, Self::Error> {
-        self.ser.serialize_seq(len).map(SerializeSeq::new)
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.ser
+            .serialize_seq(len)
+            .map(|ser| SerializeSeq::new(ser, param))
     }
 
     fn serialize_tuple(self, len: usize) -> Result<Self::SerializeTuple, Self::Error> {
-        self.ser.serialize_tuple(len).map(SerializeTuple::new)
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.ser
+            .serialize_tuple(len)
+            .map(|ser| SerializeTuple::new(ser, param))
     }
 
     fn serialize_tuple_struct(
@@ -167,9 +187,10 @@ where
         name: &'static str,
         len: usize,
     ) -> Result<Self::SerializeTupleStruct, Self::Error> {
+        let param = Param::new(self.red_zone, self.stack_size);
         self.ser
             .serialize_tuple_struct(name, len)
-            .map(SerializeTupleStruct::new)
+            .map(|ser| SerializeTupleStruct::new(ser, param))
     }
 
     fn serialize_tuple_variant(
@@ -179,13 +200,17 @@ where
         variant: &'static str,
         len: usize,
     ) -> Result<Self::SerializeTupleVariant, Self::Error> {
+        let param = Param::new(self.red_zone, self.stack_size);
         self.ser
             .serialize_tuple_variant(name, variant_index, variant, len)
-            .map(SerializeTupleVariant::new)
+            .map(|ser| SerializeTupleVariant::new(ser, param))
     }
 
     fn serialize_map(self, len: Option<usize>) -> Result<Self::SerializeMap, Self::Error> {
-        self.ser.serialize_map(len).map(SerializeMap::new)
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.ser
+            .serialize_map(len)
+            .map(|ser| SerializeMap::new(ser, param))
     }
 
     fn serialize_struct(
@@ -193,9 +218,10 @@ where
         name: &'static str,
         len: usize,
     ) -> Result<Self::SerializeStruct, Self::Error> {
+        let param = Param::new(self.red_zone, self.stack_size);
         self.ser
             .serialize_struct(name, len)
-            .map(SerializeStruct::new)
+            .map(|ser| SerializeStruct::new(ser, param))
     }
 
     fn serialize_struct_variant(
@@ -205,9 +231,10 @@ where
         variant: &'static str,
         len: usize,
     ) -> Result<Self::SerializeStructVariant, Self::Error> {
+        let param = Param::new(self.red_zone, self.stack_size);
         self.ser
             .serialize_struct_variant(name, variant_index, variant, len)
-            .map(SerializeStructVariant::new)
+            .map(|ser| SerializeStructVariant::new(ser, param))
     }
 
     fn collect_seq<I>(self, iter: I) -> Result<Self::Ok, Self::Error>
@@ -215,7 +242,10 @@ where
         I: IntoIterator,
         I::Item: ser::Serialize,
     {
-        let iter = iter.into_iter().map(|item| Serialize::new_sized(item));
+        let param = Param::new(self.red_zone, self.stack_size);
+        let iter = iter
+            .into_iter()
+            .map(|item| SerializeSized::new(item, param));
         self.ser.collect_seq(iter)
     }
 
@@ -225,9 +255,10 @@ where
         V: ser::Serialize,
         I: IntoIterator<Item = (K, V)>,
     {
+        let param = Param::new(self.red_zone, self.stack_size);
         let iter = iter
             .into_iter()
-            .map(|(k, v)| (Serialize::new_sized(k), Serialize::new_sized(v)));
+            .map(|(k, v)| (SerializeSized::new(k, param), SerializeSized::new(v, param)));
         self.ser.collect_map(iter)
     }
 
@@ -245,11 +276,15 @@ where
 
 pub struct SerializeSeq<S> {
     ser: S,
+    param: Param,
 }
 
 impl<S> SerializeSeq<S> {
-    fn new(serialize_seq: S) -> Self {
-        SerializeSeq { ser: serialize_seq }
+    fn new(serialize_seq: S, param: Param) -> Self {
+        SerializeSeq {
+            ser: serialize_seq,
+            param,
+        }
     }
 }
 
@@ -264,7 +299,8 @@ where
     where
         T: ?Sized + ser::Serialize,
     {
-        self.ser.serialize_element(Serialize::new(value))
+        self.ser
+            .serialize_element(&Serialize::new(value, self.param))
     }
 
     fn end(self) -> Result<Self::Ok, Self::Error> {
@@ -274,12 +310,14 @@ where
 
 pub struct SerializeTuple<S> {
     ser: S,
+    param: Param,
 }
 
 impl<S> SerializeTuple<S> {
-    fn new(serialize_tuple: S) -> Self {
+    fn new(serialize_tuple: S, param: Param) -> Self {
         SerializeTuple {
             ser: serialize_tuple,
+            param,
         }
     }
 }
@@ -295,7 +333,8 @@ where
     where
         T: ?Sized + ser::Serialize,
     {
-        self.ser.serialize_element(Serialize::new(value))
+        self.ser
+            .serialize_element(&Serialize::new(value, self.param))
     }
 
     fn end(self) -> Result<Self::Ok, Self::Error> {
@@ -305,12 +344,14 @@ where
 
 pub struct SerializeTupleStruct<S> {
     ser: S,
+    param: Param,
 }
 
 impl<S> SerializeTupleStruct<S> {
-    fn new(serialize_tuple_struct: S) -> Self {
+    fn new(serialize_tuple_struct: S, param: Param) -> Self {
         SerializeTupleStruct {
             ser: serialize_tuple_struct,
+            param,
         }
     }
 }
@@ -326,7 +367,7 @@ where
     where
         T: ?Sized + ser::Serialize,
     {
-        self.ser.serialize_field(Serialize::new(value))
+        self.ser.serialize_field(&Serialize::new(value, self.param))
     }
 
     fn end(self) -> Result<Self::Ok, Self::Error> {
@@ -336,12 +377,14 @@ where
 
 pub struct SerializeTupleVariant<S> {
     ser: S,
+    param: Param,
 }
 
 impl<S> SerializeTupleVariant<S> {
-    fn new(serialize_tuple_variant: S) -> Self {
+    fn new(serialize_tuple_variant: S, param: Param) -> Self {
         SerializeTupleVariant {
             ser: serialize_tuple_variant,
+            param,
         }
     }
 }
@@ -357,7 +400,7 @@ where
     where
         T: ?Sized + ser::Serialize,
     {
-        self.ser.serialize_field(Serialize::new(value))
+        self.ser.serialize_field(&Serialize::new(value, self.param))
     }
 
     fn end(self) -> Result<Self::Ok, Self::Error> {
@@ -367,11 +410,15 @@ where
 
 pub struct SerializeMap<S> {
     ser: S,
+    param: Param,
 }
 
 impl<S> SerializeMap<S> {
-    fn new(serialize_map: S) -> Self {
-        SerializeMap { ser: serialize_map }
+    fn new(serialize_map: S, param: Param) -> Self {
+        SerializeMap {
+            ser: serialize_map,
+            param,
+        }
     }
 }
 
@@ -386,14 +433,14 @@ where
     where
         T: ?Sized + ser::Serialize,
     {
-        self.ser.serialize_key(Serialize::new(key))
+        self.ser.serialize_key(&Serialize::new(key, self.param))
     }
 
     fn serialize_value<T>(&mut self, value: &T) -> Result<(), Self::Error>
     where
         T: ?Sized + ser::Serialize,
     {
-        self.ser.serialize_value(Serialize::new(value))
+        self.ser.serialize_value(&Serialize::new(value, self.param))
     }
 
     fn end(self) -> Result<Self::Ok, Self::Error> {
@@ -405,19 +452,23 @@ where
         K: ?Sized + ser::Serialize,
         V: ?Sized + ser::Serialize,
     {
-        self.ser
-            .serialize_entry(Serialize::new(key), Serialize::new(value))
+        self.ser.serialize_entry(
+            &Serialize::new(key, self.param),
+            &Serialize::new(value, self.param),
+        )
     }
 }
 
 pub struct SerializeStruct<S> {
     ser: S,
+    param: Param,
 }
 
 impl<S> SerializeStruct<S> {
-    fn new(serialize_struct: S) -> Self {
+    fn new(serialize_struct: S, param: Param) -> Self {
         SerializeStruct {
             ser: serialize_struct,
+            param,
         }
     }
 }
@@ -433,7 +484,8 @@ where
     where
         T: ?Sized + ser::Serialize,
     {
-        self.ser.serialize_field(key, Serialize::new(value))
+        self.ser
+            .serialize_field(key, &Serialize::new(value, self.param))
     }
 
     fn end(self) -> Result<Self::Ok, Self::Error> {
@@ -447,12 +499,14 @@ where
 
 pub struct SerializeStructVariant<S> {
     ser: S,
+    param: Param,
 }
 
 impl<S> SerializeStructVariant<S> {
-    fn new(serialize_struct_variant: S) -> Self {
+    fn new(serialize_struct_variant: S, param: Param) -> Self {
         SerializeStructVariant {
             ser: serialize_struct_variant,
+            param,
         }
     }
 }
@@ -468,7 +522,8 @@ where
     where
         T: ?Sized + ser::Serialize,
     {
-        self.ser.serialize_field(key, Serialize::new(value))
+        self.ser
+            .serialize_field(key, &Serialize::new(value, self.param))
     }
 
     fn end(self) -> Result<Self::Ok, Self::Error> {
@@ -480,32 +535,62 @@ where
     }
 }
 
-#[derive(RefCast)]
-#[repr(C)]
-struct Serialize<T: ?Sized> {
-    value: T,
+struct Serialize<'a, T: ?Sized> {
+    value: &'a T,
+    param: Param,
 }
 
-impl<T: ?Sized> Serialize<T> {
-    fn new(value: &T) -> &Self {
-        Serialize::ref_cast(value)
+impl<'a, T: ?Sized> Serialize<'a, T> {
+    fn new(value: &'a T, param: Param) -> Self {
+        Serialize { value, param }
     }
 }
 
-impl<T> Serialize<T> {
-    fn new_sized(value: T) -> Self {
-        Serialize { value }
-    }
-}
-
-impl<T> ser::Serialize for Serialize<T>
+impl<'a, T: ?Sized> ser::Serialize for Serialize<'a, T>
 where
-    T: ?Sized + ser::Serialize,
+    T: ser::Serialize,
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: ser::Serializer,
     {
-        self.value.serialize(Serializer::new(serializer))
+        ser::Serialize::serialize(
+            self.value,
+            Serializer {
+                ser: serializer,
+                red_zone: self.param.red_zone,
+                stack_size: self.param.stack_size,
+            },
+        )
+    }
+}
+
+struct SerializeSized<T> {
+    value: T,
+    param: Param,
+}
+
+impl<T> SerializeSized<T> {
+    fn new(value: T, param: Param) -> Self {
+        SerializeSized { value, param }
+    }
+}
+
+impl<T> ser::Serialize for SerializeSized<T>
+where
+    T: ser::Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: ser::Serializer,
+    {
+        ser::Serialize::serialize(
+            &self.value,
+            Serializer {
+                ser: serializer,
+                red_zone: self.param.red_zone,
+                stack_size: self.param.stack_size,
+            },
+        )
     }
 }

@@ -1,3 +1,4 @@
+use crate::param::Param;
 use serde::de::{self, Deserialize};
 use std::fmt;
 
@@ -10,12 +11,19 @@ where
 }
 
 pub struct Deserializer<D> {
-    de: D,
+    pub de: D,
+    pub red_zone: usize,
+    pub stack_size: usize,
 }
 
 impl<D> Deserializer<D> {
     pub fn new(deserializer: D) -> Self {
-        Deserializer { de: deserializer }
+        let default_param = Param::default();
+        Deserializer {
+            de: deserializer,
+            red_zone: default_param.red_zone,
+            stack_size: default_param.stack_size,
+        }
     }
 }
 
@@ -29,133 +37,152 @@ where
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_any(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_any(Visitor::new(visitor, param))
     }
 
     fn deserialize_bool<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_bool(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_bool(Visitor::new(visitor, param))
     }
 
     fn deserialize_u8<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_u8(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_u8(Visitor::new(visitor, param))
     }
 
     fn deserialize_u16<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_u16(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_u16(Visitor::new(visitor, param))
     }
 
     fn deserialize_u32<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_u32(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_u32(Visitor::new(visitor, param))
     }
 
     fn deserialize_u64<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_u64(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_u64(Visitor::new(visitor, param))
     }
 
     fn deserialize_i8<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_i8(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_i8(Visitor::new(visitor, param))
     }
 
     fn deserialize_i16<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_i16(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_i16(Visitor::new(visitor, param))
     }
 
     fn deserialize_i32<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_i32(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_i32(Visitor::new(visitor, param))
     }
 
     fn deserialize_i64<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_i64(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_i64(Visitor::new(visitor, param))
     }
 
     fn deserialize_f32<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_f32(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_f32(Visitor::new(visitor, param))
     }
 
     fn deserialize_f64<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_f64(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_f64(Visitor::new(visitor, param))
     }
 
     fn deserialize_char<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_char(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_char(Visitor::new(visitor, param))
     }
 
     fn deserialize_str<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_str(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_str(Visitor::new(visitor, param))
     }
 
     fn deserialize_string<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_string(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_string(Visitor::new(visitor, param))
     }
 
     fn deserialize_bytes<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_bytes(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_bytes(Visitor::new(visitor, param))
     }
 
     fn deserialize_byte_buf<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_byte_buf(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_byte_buf(Visitor::new(visitor, param))
     }
 
     fn deserialize_option<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_option(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_option(Visitor::new(visitor, param))
     }
 
     fn deserialize_unit<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_unit(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_unit(Visitor::new(visitor, param))
     }
 
     fn deserialize_unit_struct<V>(
@@ -166,7 +193,9 @@ where
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_unit_struct(name, Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de
+            .deserialize_unit_struct(name, Visitor::new(visitor, param))
     }
 
     fn deserialize_newtype_struct<V>(
@@ -177,22 +206,25 @@ where
     where
         V: de::Visitor<'de>,
     {
+        let param = Param::new(self.red_zone, self.stack_size);
         self.de
-            .deserialize_newtype_struct(name, Visitor::new(visitor))
+            .deserialize_newtype_struct(name, Visitor::new(visitor, param))
     }
 
     fn deserialize_seq<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_seq(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_seq(Visitor::new(visitor, param))
     }
 
     fn deserialize_tuple<V>(self, len: usize, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_tuple(len, Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_tuple(len, Visitor::new(visitor, param))
     }
 
     fn deserialize_tuple_struct<V>(
@@ -204,15 +236,17 @@ where
     where
         V: de::Visitor<'de>,
     {
+        let param = Param::new(self.red_zone, self.stack_size);
         self.de
-            .deserialize_tuple_struct(name, len, Visitor::new(visitor))
+            .deserialize_tuple_struct(name, len, Visitor::new(visitor, param))
     }
 
     fn deserialize_map<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_map(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_map(Visitor::new(visitor, param))
     }
 
     fn deserialize_struct<V>(
@@ -224,8 +258,9 @@ where
     where
         V: de::Visitor<'de>,
     {
+        let param = Param::new(self.red_zone, self.stack_size);
         self.de
-            .deserialize_struct(name, fields, Visitor::new(visitor))
+            .deserialize_struct(name, fields, Visitor::new(visitor, param))
     }
 
     fn deserialize_enum<V>(
@@ -237,32 +272,37 @@ where
     where
         V: de::Visitor<'de>,
     {
+        let param = Param::new(self.red_zone, self.stack_size);
         self.de
-            .deserialize_enum(name, variants, Visitor::new(visitor))
+            .deserialize_enum(name, variants, Visitor::new(visitor, param))
     }
 
     fn deserialize_ignored_any<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_ignored_any(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de
+            .deserialize_ignored_any(Visitor::new(visitor, param))
     }
 
     fn deserialize_identifier<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.de.deserialize_identifier(Visitor::new(visitor))
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_identifier(Visitor::new(visitor, param))
     }
 }
 
 struct Visitor<V> {
     delegate: V,
+    param: Param,
 }
 
 impl<V> Visitor<V> {
-    fn new(delegate: V) -> Self {
-        Visitor { delegate }
+    fn new(delegate: V, param: Param) -> Self {
+        Visitor { delegate, param }
     }
 }
 
@@ -413,36 +453,44 @@ where
     where
         D: de::Deserializer<'de>,
     {
-        self.delegate.visit_some(Deserializer { de: deserializer })
+        self.delegate.visit_some(Deserializer {
+            de: deserializer,
+            red_zone: self.param.red_zone,
+            stack_size: self.param.stack_size,
+        })
     }
 
     fn visit_newtype_struct<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
     where
         D: de::Deserializer<'de>,
     {
-        self.delegate
-            .visit_newtype_struct(Deserializer { de: deserializer })
+        self.delegate.visit_newtype_struct(Deserializer {
+            de: deserializer,
+            red_zone: self.param.red_zone,
+            stack_size: self.param.stack_size,
+        })
     }
 
     fn visit_seq<A>(self, visitor: A) -> Result<Self::Value, A::Error>
     where
         A: de::SeqAccess<'de>,
     {
-        self.delegate.visit_seq(SeqAccess::new(visitor))
+        self.delegate.visit_seq(SeqAccess::new(visitor, self.param))
     }
 
     fn visit_map<A>(self, visitor: A) -> Result<Self::Value, A::Error>
     where
         A: de::MapAccess<'de>,
     {
-        self.delegate.visit_map(MapAccess::new(visitor))
+        self.delegate.visit_map(MapAccess::new(visitor, self.param))
     }
 
     fn visit_enum<A>(self, visitor: A) -> Result<Self::Value, A::Error>
     where
         A: de::EnumAccess<'de>,
     {
-        self.delegate.visit_enum(EnumAccess::new(visitor))
+        self.delegate
+            .visit_enum(EnumAccess::new(visitor, self.param))
     }
 
     fn visit_bytes<E>(self, v: &[u8]) -> Result<Self::Value, E>
@@ -469,11 +517,12 @@ where
 
 struct EnumAccess<D> {
     delegate: D,
+    param: Param,
 }
 
 impl<D> EnumAccess<D> {
-    fn new(delegate: D) -> Self {
-        EnumAccess { delegate }
+    fn new(delegate: D, param: Param) -> Self {
+        EnumAccess { delegate, param }
     }
 }
 
@@ -488,19 +537,21 @@ where
     where
         V: de::DeserializeSeed<'de>,
     {
+        let param = self.param;
         self.delegate
-            .variant_seed(DeserializeSeed::new(seed))
-            .map(|(v, vis)| (v, VariantAccess::new(vis)))
+            .variant_seed(DeserializeSeed::new(seed, param))
+            .map(|(v, vis)| (v, VariantAccess::new(vis, param)))
     }
 }
 
 struct VariantAccess<D> {
     delegate: D,
+    param: Param,
 }
 
 impl<D> VariantAccess<D> {
-    fn new(delegate: D) -> Self {
-        VariantAccess { delegate }
+    fn new(delegate: D, param: Param) -> Self {
+        VariantAccess { delegate, param }
     }
 }
 
@@ -519,14 +570,15 @@ where
         T: de::DeserializeSeed<'de>,
     {
         self.delegate
-            .newtype_variant_seed(DeserializeSeed::new(seed))
+            .newtype_variant_seed(DeserializeSeed::new(seed, self.param))
     }
 
     fn tuple_variant<V>(self, len: usize, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
     {
-        self.delegate.tuple_variant(len, Visitor::new(visitor))
+        self.delegate
+            .tuple_variant(len, Visitor::new(visitor, self.param))
     }
 
     fn struct_variant<V>(
@@ -537,17 +589,19 @@ where
     where
         V: de::Visitor<'de>,
     {
-        self.delegate.struct_variant(fields, Visitor::new(visitor))
+        self.delegate
+            .struct_variant(fields, Visitor::new(visitor, self.param))
     }
 }
 
 struct DeserializeSeed<S> {
     delegate: S,
+    param: Param,
 }
 
 impl<S> DeserializeSeed<S> {
-    fn new(delegate: S) -> Self {
-        DeserializeSeed { delegate }
+    fn new(delegate: S, param: Param) -> Self {
+        DeserializeSeed { delegate, param }
     }
 }
 
@@ -561,17 +615,22 @@ where
     where
         D: de::Deserializer<'de>,
     {
-        self.delegate.deserialize(Deserializer { de: deserializer })
+        self.delegate.deserialize(Deserializer {
+            de: deserializer,
+            red_zone: self.param.red_zone,
+            stack_size: self.param.stack_size,
+        })
     }
 }
 
 struct SeqAccess<D> {
     delegate: D,
+    param: Param,
 }
 
 impl<D> SeqAccess<D> {
-    fn new(delegate: D) -> Self {
-        SeqAccess { delegate }
+    fn new(delegate: D, param: Param) -> Self {
+        SeqAccess { delegate, param }
     }
 }
 
@@ -585,7 +644,8 @@ where
     where
         T: de::DeserializeSeed<'de>,
     {
-        self.delegate.next_element_seed(DeserializeSeed::new(seed))
+        self.delegate
+            .next_element_seed(DeserializeSeed::new(seed, self.param))
     }
 
     fn size_hint(&self) -> Option<usize> {
@@ -595,11 +655,12 @@ where
 
 struct MapAccess<D> {
     delegate: D,
+    param: Param,
 }
 
 impl<D> MapAccess<D> {
-    fn new(delegate: D) -> Self {
-        MapAccess { delegate }
+    fn new(delegate: D, param: Param) -> Self {
+        MapAccess { delegate, param }
     }
 }
 
@@ -613,14 +674,16 @@ where
     where
         K: de::DeserializeSeed<'de>,
     {
-        self.delegate.next_key_seed(DeserializeSeed::new(seed))
+        self.delegate
+            .next_key_seed(DeserializeSeed::new(seed, self.param))
     }
 
     fn next_value_seed<V>(&mut self, seed: V) -> Result<V::Value, D::Error>
     where
         V: de::DeserializeSeed<'de>,
     {
-        self.delegate.next_value_seed(DeserializeSeed::new(seed))
+        self.delegate
+            .next_value_seed(DeserializeSeed::new(seed, self.param))
     }
 
     fn size_hint(&self) -> Option<usize> {
