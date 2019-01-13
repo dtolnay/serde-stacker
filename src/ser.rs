@@ -584,13 +584,15 @@ where
     where
         S: ser::Serializer,
     {
-        ser::Serialize::serialize(
-            &self.value,
-            Serializer {
-                ser: serializer,
-                red_zone: self.param.red_zone,
-                stack_size: self.param.stack_size,
-            },
-        )
+        stacker::maybe_grow(self.param.red_zone, self.param.stack_size, || {
+            ser::Serialize::serialize(
+                &self.value,
+                Serializer {
+                    ser: serializer,
+                    red_zone: self.param.red_zone,
+                    stack_size: self.param.stack_size,
+                },
+            )
+        })
     }
 }

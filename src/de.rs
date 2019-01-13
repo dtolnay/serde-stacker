@@ -453,10 +453,12 @@ where
     where
         D: de::Deserializer<'de>,
     {
-        self.delegate.visit_some(Deserializer {
-            de: deserializer,
-            red_zone: self.param.red_zone,
-            stack_size: self.param.stack_size,
+        stacker::maybe_grow(self.param.red_zone, self.param.stack_size, || {
+            self.delegate.visit_some(Deserializer {
+                de: deserializer,
+                red_zone: self.param.red_zone,
+                stack_size: self.param.stack_size,
+            })
         })
     }
 
@@ -464,10 +466,12 @@ where
     where
         D: de::Deserializer<'de>,
     {
-        self.delegate.visit_newtype_struct(Deserializer {
-            de: deserializer,
-            red_zone: self.param.red_zone,
-            stack_size: self.param.stack_size,
+        stacker::maybe_grow(self.param.red_zone, self.param.stack_size, || {
+            self.delegate.visit_newtype_struct(Deserializer {
+                de: deserializer,
+                red_zone: self.param.red_zone,
+                stack_size: self.param.stack_size,
+            })
         })
     }
 
@@ -475,22 +479,28 @@ where
     where
         A: de::SeqAccess<'de>,
     {
-        self.delegate.visit_seq(SeqAccess::new(visitor, self.param))
+        stacker::maybe_grow(self.param.red_zone, self.param.stack_size, || {
+            self.delegate.visit_seq(SeqAccess::new(visitor, self.param))
+        })
     }
 
     fn visit_map<A>(self, visitor: A) -> Result<Self::Value, A::Error>
     where
         A: de::MapAccess<'de>,
     {
-        self.delegate.visit_map(MapAccess::new(visitor, self.param))
+        stacker::maybe_grow(self.param.red_zone, self.param.stack_size, || {
+            self.delegate.visit_map(MapAccess::new(visitor, self.param))
+        })
     }
 
     fn visit_enum<A>(self, visitor: A) -> Result<Self::Value, A::Error>
     where
         A: de::EnumAccess<'de>,
     {
-        self.delegate
-            .visit_enum(EnumAccess::new(visitor, self.param))
+        stacker::maybe_grow(self.param.red_zone, self.param.stack_size, || {
+            self.delegate
+                .visit_enum(EnumAccess::new(visitor, self.param))
+        })
     }
 
     fn visit_bytes<E>(self, v: &[u8]) -> Result<Self::Value, E>

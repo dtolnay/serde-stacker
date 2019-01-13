@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 serde = "1.0"
+stacker = "0.1"
 
 [dev-dependencies]
 serde_json = { version = "1.0", features = ["unbounded_depth"] }
