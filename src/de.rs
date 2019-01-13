@@ -1,14 +1,6 @@
 use crate::param::Param;
-use serde::de::{self, Deserialize};
+use serde::de;
 use std::fmt;
-
-pub fn deserialize<'de, D, T>(deserializer: D) -> Result<T, D::Error>
-where
-    D: de::Deserializer<'de>,
-    T: Deserialize<'de>,
-{
-    T::deserialize(Deserializer::new(deserializer))
-}
 
 /// Deserializer adapter that avoids stack overflows by dynamically growing the
 /// stack.

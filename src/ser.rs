@@ -2,14 +2,6 @@ use crate::param::Param;
 use serde::ser;
 use std::fmt::Display;
 
-pub fn serialize<S, T>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: ser::Serializer,
-    T: ser::Serialize,
-{
-    T::serialize(value, Serializer::new(serializer))
-}
-
 /// Serializer adapter that avoids stack overflows by dynamically growing the
 /// stack.
 ///

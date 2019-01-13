@@ -71,5 +71,5 @@ mod de;
 mod param;
 mod ser;
 
-pub use de::{deserialize, Deserializer};
-pub use ser::{serialize, Serializer};
+pub use crate::de::Deserializer;
+pub use crate::ser::Serializer;
