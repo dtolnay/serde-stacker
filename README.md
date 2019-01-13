@@ -15,7 +15,7 @@ including, but not limited to, Display and Debug and Drop impls.
 ```toml
 [dependencies]
 serde = "1.0"
-serde_stacker = "0.0"
+serde_stacker = "0.1"
 ```
 
 ## Deserialization example
