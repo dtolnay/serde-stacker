@@ -15,6 +15,3 @@ stacker = "0.1"
 
 [dev-dependencies]
 serde_json = { version = "1.0", features = ["unbounded_depth"] }
-
-[patch.crates-io]
-serde_json = { git = "https://github.com/dtolnay/serde-json", branch = "stacker" }
