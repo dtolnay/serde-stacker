@@ -9,9 +9,6 @@ documentation = "https://docs.rs/serde_stacker"
 readme = "README.md"
 edition = "2018"
 
-[badges]
-travis-ci = { repository = "dtolnay/serde-stacker" }
-
 [dependencies]
 serde = "1.0"
 stacker = "0.1"
