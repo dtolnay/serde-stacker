@@ -1,7 +1,7 @@
 Serde stack growth adapter
 ==========================
 
-[![Build Status](https://api.travis-ci.com/dtolnay/serde-stacker.svg?branch=master)](https://travis-ci.com/dtolnay/serde-stacker)
+[![Build Status](https://img.shields.io/github/workflow/status/dtolnay/serde-stacker/CI/master)](https://github.com/dtolnay/serde-stacker/actions?query=branch%3Amaster)
 [![Latest Version](https://img.shields.io/crates/v/serde_stacker.svg)](https://crates.io/crates/serde_stacker)
 [![Rust Documentation](https://img.shields.io/badge/api-rustdoc-blue.svg)](https://docs.rs/serde_stacker)
 
