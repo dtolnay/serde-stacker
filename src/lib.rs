@@ -67,7 +67,7 @@
 //! }
 //! ```
 
-#![doc(html_root_url = "https://docs.rs/serde_stacker/0.1.1")]
+#![doc(html_root_url = "https://docs.rs/serde_stacker/0.1.2")]
 
 mod de;
 mod param;

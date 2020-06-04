@@ -1,6 +1,6 @@
 [package]
 name = "serde_stacker"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 license = "MIT OR Apache-2.0"
 description = "Serde adapter that avoids stack overflow by dynamically growing the stack"
