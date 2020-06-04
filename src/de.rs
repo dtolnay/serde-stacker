@@ -81,6 +81,14 @@ where
         self.de.deserialize_u64(Visitor::new(visitor, param))
     }
 
+    fn deserialize_u128<V>(self, visitor: V) -> Result<V::Value, D::Error>
+    where
+        V: de::Visitor<'de>,
+    {
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_u128(Visitor::new(visitor, param))
+    }
+
     fn deserialize_i8<V>(self, visitor: V) -> Result<V::Value, D::Error>
     where
         V: de::Visitor<'de>,
@@ -111,6 +119,14 @@ where
     {
         let param = Param::new(self.red_zone, self.stack_size);
         self.de.deserialize_i64(Visitor::new(visitor, param))
+    }
+
+    fn deserialize_i128<V>(self, visitor: V) -> Result<V::Value, D::Error>
+    where
+        V: de::Visitor<'de>,
+    {
+        let param = Param::new(self.red_zone, self.stack_size);
+        self.de.deserialize_i128(Visitor::new(visitor, param))
     }
 
     fn deserialize_f32<V>(self, visitor: V) -> Result<V::Value, D::Error>
