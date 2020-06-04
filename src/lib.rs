@@ -54,7 +54,7 @@
 //!     carefully_drop_nested_arrays(value);
 //!
 //!     result.unwrap();
-//!     assert_eq!(out.len(), 10000 + 4 + 10000);
+//!     assert_eq!(out.len(), 10000 + "null".len() + 10000);
 //! }
 //!
 //! fn carefully_drop_nested_arrays(value: Value) {
