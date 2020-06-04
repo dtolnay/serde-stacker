@@ -309,6 +309,10 @@ where
         let param = Param::new(self.red_zone, self.stack_size);
         self.de.deserialize_identifier(Visitor::new(visitor, param))
     }
+
+    fn is_human_readable(&self) -> bool {
+        self.de.is_human_readable()
+    }
 }
 
 struct Visitor<V> {
