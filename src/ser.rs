@@ -546,9 +546,9 @@ impl<'a, T: ?Sized> Serialize<'a, T> {
     }
 }
 
-impl<'a, T: ?Sized> ser::Serialize for Serialize<'a, T>
+impl<'a, T> ser::Serialize for Serialize<'a, T>
 where
-    T: ser::Serialize,
+    T: ?Sized + ser::Serialize,
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
