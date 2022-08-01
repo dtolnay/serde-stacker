@@ -2,6 +2,7 @@
 name = "serde_stacker"
 version = "0.1.5"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
+categories = ["encoding"]
 description = "Serde adapter that avoids stack overflow by dynamically growing the stack"
 documentation = "https://docs.rs/serde_stacker"
 edition = "2018"
