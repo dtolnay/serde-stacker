@@ -6,6 +6,7 @@ categories = ["encoding"]
 description = "Serde adapter that avoids stack overflow by dynamically growing the stack"
 documentation = "https://docs.rs/serde_stacker"
 edition = "2018"
+keywords = ["serde", "serialization"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/dtolnay/serde-stacker"
