@@ -18,5 +18,8 @@ stacker = "0.1"
 [dev-dependencies]
 serde_json = { version = "1.0.38", features = ["unbounded_depth"] }
 
+[lib]
+doc-scrape-examples = false
+
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
