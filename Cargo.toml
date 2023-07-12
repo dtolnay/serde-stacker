@@ -5,11 +5,11 @@ authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["encoding"]
 description = "Serde adapter that avoids stack overflow by dynamically growing the stack"
 documentation = "https://docs.rs/serde_stacker"
-edition = "2018"
+edition = "2021"
 keywords = ["serde", "serialization"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/serde-stacker"
-rust-version = "1.36"
+rust-version = "1.56"
 
 [dependencies]
 serde = "1.0.166"
