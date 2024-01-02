@@ -12,7 +12,7 @@ repository = "https://github.com/dtolnay/serde-stacker"
 rust-version = "1.56"
 
 [dependencies]
-serde = "1.0.166"
+serde = "1.0.194"
 stacker = "0.1.15"
 
 [dev-dependencies]
