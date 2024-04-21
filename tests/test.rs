@@ -1,3 +1,5 @@
+#![allow(clippy::uninlined_format_args)]
+
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
