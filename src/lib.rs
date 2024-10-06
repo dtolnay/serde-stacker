@@ -76,6 +76,7 @@
 //! ```
 
 #![doc(html_root_url = "https://docs.rs/serde_stacker/0.1.11")]
+#![allow(clippy::needless_lifetimes)]
 
 mod de;
 mod param;
