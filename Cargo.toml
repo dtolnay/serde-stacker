@@ -18,9 +18,6 @@ stacker = "0.1.15"
 [dev-dependencies]
 serde_json = { version = "1.0.100", features = ["unbounded_depth"] }
 
-[lib]
-doc-scrape-examples = false
-
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = ["--generate-link-to-definition"]
