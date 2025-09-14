@@ -75,7 +75,7 @@
 //! }
 //! ```
 
-#![doc(html_root_url = "https://docs.rs/serde_stacker/0.1.12")]
+#![doc(html_root_url = "https://docs.rs/serde_stacker/0.1.13")]
 #![allow(clippy::elidable_lifetime_names, clippy::needless_lifetimes)]
 
 extern crate serde_core as serde;
