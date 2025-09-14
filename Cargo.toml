@@ -12,10 +12,11 @@ repository = "https://github.com/dtolnay/serde-stacker"
 rust-version = "1.67"
 
 [dependencies]
-serde = "1.0.194"
+serde_core = "1.0.220"
 stacker = "0.1.15"
 
 [dev-dependencies]
+serde = "1.0.220"
 serde_json = { version = "1.0.100", features = ["unbounded_depth"] }
 
 [package.metadata.docs.rs]
