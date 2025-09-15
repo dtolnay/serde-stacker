@@ -12,11 +12,11 @@ repository = "https://github.com/dtolnay/serde-stacker"
 rust-version = "1.67"
 
 [dependencies]
-serde_core = "1.0.220"
+serde_core = { version = "1.0.220", default-features = false, features = ["alloc"] }
 stacker = "0.1.15"
 
 [target.'cfg(any())'.dependencies]
-serde = "1.0.220"
+serde = { version = "1.0.220", default-features = false }
 
 [dev-dependencies]
 serde = "1.0.220"
